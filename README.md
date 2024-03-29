@@ -1,1 +1,1 @@
-"# Slovenski-Prevajalnik-Jave" 
+# Slovenski-Prevajalnik-Jave
