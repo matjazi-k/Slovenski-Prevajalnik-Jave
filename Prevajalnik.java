@@ -26,14 +26,18 @@ public class Prevajalnik {
 		
 			prevedeno = prevediDat(bralec);
 			System.out.println(prevedeno);
-			
+			bralec.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("Datoteke " + imeDat + ".slojava ni bilo mogoče najti.\nPreverite, če ste pravilno vnesli ime datoteke.");
+		} catch (IOException e) {
+			System.out.println("Datoteke ni mogoče zapreti za branje.");
 		}
 		
 		try {
-			BufferedWriter pisatelj = new BufferedWriter(new FileWriter(imeDat + ".java")); 
-			
+			BufferedWriter pisatelj = new BufferedWriter(new FileWriter(imeDat + ".java"));
+			pisatelj.write(prevedeno, 0, prevedeno.length());
+			pisatelj.close();
+			System.out.println("Done!");
 		} catch (IOException e) {
 			System.out.println("Datoteke " + imeDat + ".slojava ni bilo mogoče shraniti.");
 		}
