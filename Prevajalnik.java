@@ -2,44 +2,84 @@ import java.io.*;
 import java.util.*;
 
 public class Prevajalnik {
-	static String[] words = new String[]{"\tče ", "\tdokler ", "\tza ", "\tpočni "};
-	static String[] translations = new String[]{"\tif ", "\twhile ", "\tfor ", "\tdo "};
-	/*static String[] possiblePrefixes = new String[]{" ", ")", "}","\t","\n"};
-	static String[] possibleSufixes = new String[]{" ", "(", "{"};
-	static HashMap<String,String> prevodi = new HashMap<String,String>();*/
+	static String WORDS_FILE = "translate.csv";
+	static String[] words = null;
+	static String[] translations = null;
+	static String[] possiblePrefixes = new String[]{" ", "\\)", "\\}","\t","\n"};
+	static String[] possibleSufixes = new String[]{" ", "\\(", "\\{"};
 	
 	public static void main(String[] args) {
-		String imeDat = args[0];
-		String prevedeno = "";
+		try {
+			String imeDat = args[0];
+			String prevedeno = "";
 		
-		/*for (int i = 0; i < words.length; i++) {
-			for (int prefi = 0; prefi < possiblePrefixes.length; prefi++) {
-				for (int sufi = 0; sufi < possibleSufixes.length; sufi++) {
-					prevodi.put(possiblePrefixes[prefi]+words[i]+possibleSufixes[sufi], possiblePrefixes[prefi]+translations[i]+possibleSufixes[sufi]);
+			genTranslationCombinations();
+			
+			try {
+				BufferedReader bralec = new BufferedReader(new FileReader(imeDat + ".slojava"));
+			
+				prevedeno = prevediDat(bralec);
+				System.out.println(prevedeno);
+				bralec.close();
+			} catch (FileNotFoundException e) {
+				System.out.println("Datoteke " + imeDat + ".slojava ni bilo mogoče najti.\nPreverite, če ste pravilno vnesli ime datoteke.");
+			} catch (IOException e) {
+				System.out.println("Datoteke ni mogoče zapreti za branje.");
+			}
+			
+			try {
+				BufferedWriter pisatelj = new BufferedWriter(new FileWriter(imeDat + ".java"));
+				pisatelj.write(prevedeno, 0, prevedeno.length());
+				pisatelj.close();
+				System.out.println("Done!");
+			} catch (IOException e) {
+				System.out.println("Datoteke " + imeDat + ".slojava ni bilo mogoče shraniti.");
+			}
+		} catch (Exception e) {
+			System.out.println("Niste podali imena datoteke!");
+		}
+	}
+	
+	public static void genTranslationCombinations() {
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(WORDS_FILE));
+			String line;
+			
+			int c = 0;
+			while ((line = reader.readLine()) != null) {
+				String[] translation = line.split(";");
+				for (int i = 0; i < possiblePrefixes.length; i++) {
+					for (int j = 0; j < possibleSufixes.length; j++) {
+						c++;
+					}
 				}
 			}
-		}*/
-		
-		
-		try {
-			BufferedReader bralec = new BufferedReader(new FileReader(imeDat + ".slojava"));
-		
-			prevedeno = prevediDat(bralec);
-			System.out.println(prevedeno);
-			bralec.close();
-		} catch (FileNotFoundException e) {
-			System.out.println("Datoteke " + imeDat + ".slojava ni bilo mogoče najti.\nPreverite, če ste pravilno vnesli ime datoteke.");
-		} catch (IOException e) {
-			System.out.println("Datoteke ni mogoče zapreti za branje.");
-		}
-		
-		try {
-			BufferedWriter pisatelj = new BufferedWriter(new FileWriter(imeDat + ".java"));
-			pisatelj.write(prevedeno, 0, prevedeno.length());
-			pisatelj.close();
-			System.out.println("Done!");
-		} catch (IOException e) {
-			System.out.println("Datoteke " + imeDat + ".slojava ni bilo mogoče shraniti.");
+			
+			reader.close();
+			
+			BufferedReader reader2 = new BufferedReader(new FileReader(WORDS_FILE));
+			String[] wordsTemp = new String[c];
+			String[] translationsTemp = new String[c];
+			
+			while ((line = reader2.readLine()) != null) {
+				String[] translation = line.split(";");
+				for (int i = 0; i < possiblePrefixes.length; i++) {
+					for (int j = 0; j < possibleSufixes.length; j++) {
+						c--;
+						wordsTemp[c] = (possiblePrefixes[i]+translation[0]+possibleSufixes[j]);
+						translationsTemp[c] = (possiblePrefixes[i]+translation[1]+possibleSufixes[j]);
+					}
+				}
+			}
+			
+			words = wordsTemp;
+			translations = translationsTemp;
+			
+			reader2.close();
+			
+		} catch (Exception e) {
+			System.out.println("Napaka pri branju datoteke translate.csv");
+			System.out.println(e);
 		}
 	}
 	
@@ -49,18 +89,17 @@ public class Prevajalnik {
 		String translated = "";
 		try {
 			while ((line = reader.readLine()) != null) {
-				/*for (String word: prevodi.keySet()) {
-					line.replaceAll(word, prevodi.get(word));
-				}*/
+				for (int i = 0; i < words.length; i++) {
+					if (line.contains(words[i])) {
+						//System.out.println(words[i] + " : " + translations[i]);
+						line = line.replaceAll(words[i], translations[i]);
+					}
+				}
 				content.append(line);
 				content.append(System.lineSeparator());
 			}
 			
 			translated = content.toString();
-			
-			for (int i = 0; i < words.length; i++) {
-				translated = translated.replaceAll(words[i], translations[i]);
-			}
 			
 		} catch (Exception e) {
 			System.out.println("Napaka pri branju datoteke.");
