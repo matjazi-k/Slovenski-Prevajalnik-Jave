@@ -48,8 +48,8 @@ public class Prevajalnik {
 				String[] wandt = line.split(";");
 				for (int i = 0; i < possiblePrefixes.length; i++) {
 					for (int j = 0; j < possibleSufixes.length; j++) {
-						String word = possiblePrefixes[i]+wandt[0]+possibleSufixes[j];
-						String transaltion = possiblePrefixes[i]+wandt[1]+possibleSufixes[j];
+						String word = possiblePrefixes[i]+wandt[1]+possibleSufixes[j];
+						String transaltion = possiblePrefixes[i]+wandt[0]+possibleSufixes[j];
 						wordsAndTranslations.put(word, transaltion);
 					}
 				}
