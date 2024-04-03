@@ -10,3 +10,4 @@ Trenuten koncept omogoča prevajanje kar 4-ih besed "če", "počni", "dokler" in
 - imeti datoteko iz katere prebere vse slovenske besede in njihove prevode (bi omogočilo več jezikov kot samo slovenščino, če spremenimo vhodno datoteko)
 - GUI, kjer bo uporabnik lahko pisal in pognal kodo
 - narediti .jar? oz .exe?
+- ne vem zakaj bi se omejil samo na javo?
