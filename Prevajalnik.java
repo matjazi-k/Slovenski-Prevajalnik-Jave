@@ -2,9 +2,8 @@ import java.io.*;
 import java.util.*;
 
 public class Prevajalnik {
-	static String WORDS_FILE = "translate.csv";
-	static String[] words = null;
-	static String[] translations = null;
+	static String words_file = "translate.csv";
+	static HashMap<String,String> wordsAndTranslations = new HashMap<String, String>();
 	static String[] possiblePrefixes = new String[]{" ", "\\)", "\\}","\t","\n"};
 	static String[] possibleSufixes = new String[]{" ", "\\(", "\\{"};
 	
@@ -42,40 +41,21 @@ public class Prevajalnik {
 	
 	public static void genTranslationCombinations() {
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(WORDS_FILE));
+			BufferedReader reader = new BufferedReader(new FileReader(words_file));
 			String line;
 			
-			int c = 0;
 			while ((line = reader.readLine()) != null) {
-				String[] translation = line.split(";");
+				String[] wandt = line.split(";");
 				for (int i = 0; i < possiblePrefixes.length; i++) {
 					for (int j = 0; j < possibleSufixes.length; j++) {
-						c++;
+						String word = possiblePrefixes[i]+wandt[1]+possibleSufixes[j];
+						String transaltion = possiblePrefixes[i]+wandt[0]+possibleSufixes[j];
+						wordsAndTranslations.put(word, transaltion);
 					}
 				}
 			}
 			
 			reader.close();
-			
-			BufferedReader reader2 = new BufferedReader(new FileReader(WORDS_FILE));
-			String[] wordsTemp = new String[c];
-			String[] translationsTemp = new String[c];
-			
-			while ((line = reader2.readLine()) != null) {
-				String[] translation = line.split(";");
-				for (int i = 0; i < possiblePrefixes.length; i++) {
-					for (int j = 0; j < possibleSufixes.length; j++) {
-						c--;
-						wordsTemp[c] = (possiblePrefixes[i]+translation[0]+possibleSufixes[j]);
-						translationsTemp[c] = (possiblePrefixes[i]+translation[1]+possibleSufixes[j]);
-					}
-				}
-			}
-			
-			words = wordsTemp;
-			translations = translationsTemp;
-			
-			reader2.close();
 			
 		} catch (Exception e) {
 			System.out.println("Napaka pri branju datoteke translate.csv");
@@ -89,10 +69,9 @@ public class Prevajalnik {
 		String translated = "";
 		try {
 			while ((line = reader.readLine()) != null) {
-				for (int i = 0; i < words.length; i++) {
-					if (line.contains(words[i])) {
-						//System.out.println(words[i] + " : " + translations[i]);
-						line = line.replaceAll(words[i], translations[i]);
+				for (String word : wordsAndTranslations.keySet()) {
+					if (line.contains(word)) {
+						line = line.replaceAll(word, wordsAndTranslations.get(word));
 					}
 				}
 				content.append(line);
